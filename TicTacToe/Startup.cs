@@ -14,6 +14,9 @@ namespace TicTacToe
     /// </summary>
     public class Startup
     {
+			private string Version = "v1";
+			private string Title = "Tic Tac Toe API";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup" /> class.
         /// </summary>
@@ -59,7 +62,7 @@ namespace TicTacToe
         /// <param name="swaggerGenOptions">The swagger gen options.</param>
         private void ConfigureSwaggerUI(SwaggerGenOptions swaggerGenOptions)
         {
-            swaggerGenOptions.SwaggerDoc("v1", new Info { Title = "Hello World Swagger Demo", Version = "v1" });
+            swaggerGenOptions.SwaggerDoc(Version, new Info { Title = Title, Version = Version });
 
             var filePath = Path.Combine(HostingEnvironment.ContentRootPath, "TicTacToe.config");
             swaggerGenOptions.IncludeXmlComments(filePath);
@@ -99,7 +102,7 @@ namespace TicTacToe
             // SWAGGER: swagger-ui-middleware to expose interactive documentation
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hello World Swagger Demo");
+                c.SwaggerEndpoint($"/swagger/{Version}/swagger.json", Title);
             });
 
 
