@@ -103,7 +103,7 @@ namespace TicTacToe.Models {
         /// </summary>
         /// <param name="scenario">A list of indices.</param>
         /// <returns>A list of position symbols ("X"|"O"|"?") corresponding to those indicies.</returns>
-        private IEnumerable<string> GetScenarioState (List<int> scenario) {
+        private IEnumerable<string> GetScenarioState (IEnumerable<int> scenario) {
             return scenario.Select (i => this.gameBoard.ElementAt (i));
         }
 
@@ -158,13 +158,77 @@ namespace TicTacToe.Models {
             );
         }
 
+        // My strategy:
+        // 1. Win
+        // 2. Block an immediate win
+        // 3. Build a two-way threat (2 scenarios will upgrade to level 2)
+        //      (think of a two-way threat as a checkmate)
+        // 4. Block a two-way threat
+        // 5. Build a 1-way threat (1 scenario will upgrade to level 2)
+        // 6. Place in a generically strategic position.
+
+        private static readonly List<int> winWeights = new List<int> {
+            1, // if not close to winning, not a high priority (beginning of game, middle=4)
+            5, // if will get close to winning, worth considering.
+            // Two-way threat scores a 10.
+            1000 // if will win, then place the token already!
+        };
+        private static readonly List<int> loseWeights = new List<int> {
+            0, // enemy gives no reason to place here.
+            4, // block the enemy
+            // Two-way block scores an 8 (higher than building a one-way threat, lower than building a two-way threat)
+            100 // if will lose, then prioritize blocking (lower than winning, of course)
+        };
+
         /// <summary>
         /// The game heuristic which decides where to play the next move.
         /// </summary>
         /// <param name="playerSymbol">The symbol of the software player.</param>
         /// <returns>The index this software player intends to play.</returns>
         public int GetNextMove (string playerSymbol) {
-            return 4;
+            string otherPlayer = playerSymbol == X ? O : X;
+
+            // Plan: whichever index has the highest score gets played.
+            List<int> scores = new List<int> {
+                0, 0, 0,
+                0, 0, 0,
+                0, 0, 0,
+            };
+
+            // Give points based on progress toward my player winning:
+            IEnumerable<IEnumerable<int>> winableScenarios = Board.winningIndexes.Where (scen =>
+                // keep scenarios containing no enemy placements (can be won)
+                this.GetScenarioState (scen).All (s => s != otherPlayer)
+            );
+            foreach (List<int> scenario in winableScenarios) {
+                IEnumerable<string> state = this.GetScenarioState (scenario);
+                int count = state.Count (s => s == playerSymbol);
+                foreach (int index in scenario) {
+                    if (((List<string>) this.gameBoard) [index] == EMPTY) {
+                        scores[index] += winWeights[count];
+                    }
+                }
+            }
+
+            // Give points based on enemy progress toward winning
+            IEnumerable<IEnumerable<int>> losableScenarios = Board.winningIndexes.Where (scen =>
+                // keep scenarios containing no enemy placements (can be won)
+                this.GetScenarioState (scen).All (s => s != playerSymbol)
+            );
+            foreach (List<int> scenario in losableScenarios) {
+                IEnumerable<string> state = this.GetScenarioState (scenario);
+                int count = state.Count (s => s == otherPlayer);
+                foreach (int index in scenario) {
+                    if (((List<string>) this.gameBoard) [index] == EMPTY) {
+                        scores[index] += loseWeights[count];
+                    }
+                }
+            }
+
+            // Find highest-valued index
+            return Enumerable.Range(0, scores.Count())
+                .Where(i => this.gameBoard.ElementAt(i) == EMPTY)
+                .Aggregate((max, i) => scores[max] > scores[i] ? max : i);
         }
     }
 }
