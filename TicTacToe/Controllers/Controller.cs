@@ -20,8 +20,8 @@ namespace TicTacToe.Controllers {
         /// <param name="startBoard">The current state of the board.</param>
         /// <returns>A board state update.</returns>
         [HttpPost]
-        [ProducesResponseType (typeof (string), (int) HttpStatusCode.OK)]
-        [ProducesResponseType (typeof (string), (int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType (typeof (Models.GameStateUpdate), (int) HttpStatusCode.OK)]
+        [ProducesResponseType (typeof (Models.ErrorResponse), (int) HttpStatusCode.BadRequest)]
         public ActionResult<Models.GameStateUpdate> Post (Models.Board startBoard) {
             startBoard.CheckValidState ();
 

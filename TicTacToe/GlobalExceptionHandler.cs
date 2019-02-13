@@ -22,10 +22,10 @@ namespace TicTacToe {
 
             if (context.Exception is ArgumentException) {
                 httpResponse.StatusCode = (int) HttpStatusCode.BadRequest;
-                errorResponse = new Models.ErrorResponse (context.Exception.Message);
+                errorResponse = new Models.ErrorResponse (1, context.Exception.Message);
             } else {
                 httpResponse.StatusCode = (int) HttpStatusCode.InternalServerError;
-                errorResponse = new Models.ErrorResponse ($"An internal error has occured: {context.Exception.Message}");
+                errorResponse = new Models.ErrorResponse (0, $"An internal error has occured: {context.Exception.Message}");
             }
 
             // Serialize error response into json
