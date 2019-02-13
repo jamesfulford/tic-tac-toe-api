@@ -16,27 +16,14 @@ namespace TicTacToe.Controllers {
     public class Controller : ControllerBase {
         /// <summary>
         /// Plays a turn of Tic Tac Toe given the current board state.
-        /// Body is a JSON object with a startBoard attribute, whose value is a list of 9 strings representing the current game state. Acceptable strings are either a player symbol ("X"|"O") or "?" if empty.
         /// </summary>
-        /// <returns>A new board state.</returns>
+        /// <param name="startBoard">The current state of the board.</param>
+        /// <returns>A board state update.</returns>
         [HttpPost]
         [ProducesResponseType (typeof (string), (int) HttpStatusCode.OK)]
         [ProducesResponseType (typeof (string), (int) HttpStatusCode.BadRequest)]
-        public IActionResult Post () {
-            // If I used [FromBody], then if "gameBoard" attribute is missing in JSON payload, then a 500 code is returned.
-            string rawString = new StreamReader (Request.Body, System.Text.Encoding.UTF8).ReadToEnd ();
-            Models.Board startBoard = null;
-            try {
-                startBoard = JsonConvert.DeserializeObject<Models.Board> (rawString);
-                if (startBoard.gameBoard == null) {
-                    throw new ArgumentException ();
-                }
-            } catch (Exception) {
-                return BadRequest ();
-            }
-            if (!startBoard.IsValidState ()) {
-                return BadRequest ();
-            }
+        public ActionResult<Models.GameStateUpdate> Post (Models.Board startBoard) {
+            startBoard.CheckValidState ();
 
             string winner = startBoard.Winner ();
             string azurePlayerSymbol = startBoard.WhichPlayersTurn ();

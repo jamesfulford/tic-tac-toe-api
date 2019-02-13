@@ -31,11 +31,11 @@ namespace TicTacToe.Models {
 
         private static readonly string[] Players = { X, O };
         private static readonly string[] Symbols = { X, O, EMPTY };
+
         /// <summary>
         /// WinningIndexes is a list of index lists which produce a win in Tic Tac Toe.
         /// For instance, the element [0, 1, 2] of WinningIndexes means that if a player plays in all of the top 3 positions of the board, they win.
         /// </summary>
-        /// <value></value>
         private static readonly List<List<int>> winningIndexes = new List<List<int>> {
             // Horizontal wins
             new List<int> { 0, 1, 2 },
@@ -67,26 +67,34 @@ namespace TicTacToe.Models {
         }
 
         /// <summary>
-        /// Detects whether a board's state is valid.
-        /// Valid boards have 9 symbols, all either "X"|"O"|"?",
-        /// and the difference between "X" and "O" is no more than 1 play.
+        /// Throws an exception if board is in an invalid state.
         /// </summary>
         /// <returns>Whether the current gameboard state is valid.</returns>
-        public Boolean IsValidState () {
-            return this.gameBoard.Count () == 9 &&
-                this.gameBoard.All (space => Symbols.Contains (space)) &&
-                Math.Abs (
-                    this.gameBoard.Count (space => space == X) -
-                    this.gameBoard.Count (space => space == O)
-                ) <= 1;
+        /// <remarks>
+        /// Valid boards have 9 symbols, all either "X"|"O"|"?",
+        /// and the difference between "X" and "O" is no more than 1 play.
+        /// </remarks>
+        public void CheckValidState () {
+            if (this.gameBoard.Count () != 9) {
+                throw new ArgumentException ("\"gameBoard\" must have exactly 9 elements.");
+            }
+            if (!this.gameBoard.All (space => Symbols.Contains (space))) {
+                throw new ArgumentException ("All elements of \"gameBoard\" must be one of \"X\", \"O\", or \"?\".");
+            }
+            int xminuso = this.gameBoard.Count (space => space == X) -
+                this.gameBoard.Count (space => space == O);
+            if (Math.Abs (xminuso) > 1) {
+                throw new ArgumentException ($"Cannot skip turns. {(xminuso > 0 ? "X" : "O")} has {Math.Abs(xminuso)} more plays than {(xminuso < 0 ? "X" : "O")}, indicating skipping of the latter's turn(s).");
+            }
         }
 
         /// <summary>
-        /// Assuming the current state is waiting for the software to play,
-        /// this method infers which player symbol the software should play as.
-        /// Prefers "X".
+        /// Infers which player symbol the software should play as.
         /// </summary>
         /// <returns>A player symbol ("X"|"O") believed to belong to this player.</returns>
+        /// <remarks>
+        /// Prefers "X" in cases where it cannot decide.
+        /// </remarks>
         public string WhichPlayersTurn () {
             // The less common symbol is me.
             // if equally common, then I must have played first.
@@ -190,9 +198,15 @@ namespace TicTacToe.Models {
 
             // Plan: whichever index has the highest score gets played.
             List<int> scores = new List<int> {
-                0, 0, 0,
-                0, 0, 0,
-                0, 0, 0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
             };
 
             // Give points based on progress toward my player winning:
@@ -226,9 +240,9 @@ namespace TicTacToe.Models {
             }
 
             // Find highest-valued index
-            return Enumerable.Range(0, scores.Count())
-                .Where(i => this.gameBoard.ElementAt(i) == EMPTY)
-                .Aggregate((max, i) => scores[max] > scores[i] ? max : i);
+            return Enumerable.Range (0, scores.Count ())
+                .Where (i => this.gameBoard.ElementAt (i) == EMPTY)
+                .Aggregate ((max, i) => scores[max] > scores[i] ? max : i);
         }
     }
 }
