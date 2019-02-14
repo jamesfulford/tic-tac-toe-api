@@ -22,7 +22,7 @@ namespace TicTacToe.Controllers {
         [HttpPost]
         [ProducesResponseType (typeof (Models.GameStateUpdate), (int) HttpStatusCode.OK)]
         [ProducesResponseType (typeof (Models.ErrorResponse), (int) HttpStatusCode.BadRequest)]
-        public ActionResult<Models.GameStateUpdate> Post (Models.Board startBoard) {
+        public ActionResult<Models.GameStateUpdate> ExecuteMove (Models.Board startBoard) {
             startBoard.CheckValidState ();
 
             string winner = startBoard.Winner ();
