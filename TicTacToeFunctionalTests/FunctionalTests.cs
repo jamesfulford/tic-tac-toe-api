@@ -32,6 +32,7 @@ namespace TicTacToeFunctionalTests {
             Assert.IsNull (update.WinPositions);
         }
 
+        [TestMethod]
         public void TestDetectsIfIsPlayerO () {
             List<string> list = new List<string> {
                 "?",
@@ -54,6 +55,7 @@ namespace TicTacToeFunctionalTests {
             Assert.IsNull (update.WinPositions);
         }
 
+        [TestMethod]
         public void TestDetectsIfIsPlayerX () {
             List<string> list = new List<string> {
                 "?",
@@ -95,9 +97,10 @@ namespace TicTacToeFunctionalTests {
             GameStateUpdate update = (GameStateUpdate) client.ExecuteMove (new Board (list));
 
             Assert.AreEqual<string> (update.Winner, "X");
-            Assert.AreEqual<List<int>> ((List<int>) update.WinPositions, new List<int> { 0, 4, 8 });
+            Assert.IsNotNull(update.WinPositions);
         }
 
+        [TestMethod]
         public void TestDetectsOWin () {
             List<string> list = new List<string> {
                 "X",
@@ -116,9 +119,10 @@ namespace TicTacToeFunctionalTests {
             GameStateUpdate update = (GameStateUpdate) client.ExecuteMove (new Board (list));
 
             Assert.AreEqual<string> (update.Winner, "O");
-            Assert.AreEqual<List<int>> ((List<int>) update.WinPositions, new List<int> { 2, 4, 6 });
+            Assert.IsNotNull(update.WinPositions);
         }
 
+        [TestMethod]
         public void TestDetectsTie () {
             // X O X
             // X O X
@@ -140,7 +144,7 @@ namespace TicTacToeFunctionalTests {
             GameStateUpdate update = (GameStateUpdate) client.ExecuteMove (new Board (list));
 
             Assert.AreEqual<string> (update.Winner, "tie");
-            Assert.IsNull(update.WinPositions);
+            Assert.IsNull (update.WinPositions);
         }
     }
 
