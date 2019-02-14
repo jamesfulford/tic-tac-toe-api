@@ -41,9 +41,13 @@ namespace TicTacToe.Controllers {
                     nextBoard.WinningScenario ()
                 ));
             } else {
+                // No-Op, basically
                 return new ObjectResult (new Models.GameStateUpdate (
                     azurePlayerSymbol,
-                    startBoard.Winner ()
+                    startBoard.Winner (),
+                    null,
+                    startBoard.gameBoard,
+                    startBoard.WinningScenario ()
                 ));
             }
         }
