@@ -1,2 +1,24 @@
 James Fulford
 jaf968@g.harvard.edu
+
+Here, try this curl:
+```
+curl -X POST \
+  https://tictactoe20190214125437.azurewebsites.net/api/executemove \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  -H 'postman-token: 2e8bd155-c69b-f39d-0457-ab5c33f54904' \
+  -d '{
+	"gameBoard": [
+        "X",
+        "X",
+        "X",
+        "O",
+        "O",
+        "?",
+        "?",
+        "?",
+        "?"
+    ]
+}'
+```
