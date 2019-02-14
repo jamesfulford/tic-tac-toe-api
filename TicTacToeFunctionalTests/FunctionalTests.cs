@@ -10,7 +10,7 @@ namespace TicTacToeFunctionalTests {
     [TestClass]
     public class TestHappyPaths {
         [TestMethod]
-        public void TestReturnsCorrectType () {
+        public void TestPlaysXFirst () {
             List<string> list = new List<string> {
                 "?",
                 "?",
@@ -25,11 +25,122 @@ namespace TicTacToeFunctionalTests {
             ServiceClientCredentials serviceClientCredentials = new TokenCredentials ("FakeTokenValue");
             TicTacToeSDKClient client = new TicTacToeSDKClient (new Uri ("https://localhost:44305"), serviceClientCredentials);
 
-            Object update = client.ExecuteMove (new Board (list));
+            GameStateUpdate update = (GameStateUpdate) client.ExecuteMove (new Board (list));
 
-            if (!(update is GameStateUpdate)) {
-                throw new AssertFailedException ("Should have succeeded");
-            }
+            Assert.AreEqual<string> (update.AzurePlayerSymbol, "X");
+            Assert.AreEqual<string> (update.Winner, "inconclusive");
+            Assert.IsNull (update.WinPositions);
+        }
+
+        public void TestDetectsIfIsPlayerO () {
+            List<string> list = new List<string> {
+                "?",
+                "?",
+                "?",
+                "?",
+                "X",
+                "?",
+                "?",
+                "?",
+                "?"
+            };
+            ServiceClientCredentials serviceClientCredentials = new TokenCredentials ("FakeTokenValue");
+            TicTacToeSDKClient client = new TicTacToeSDKClient (new Uri ("https://localhost:44305"), serviceClientCredentials);
+
+            GameStateUpdate update = (GameStateUpdate) client.ExecuteMove (new Board (list));
+
+            Assert.AreEqual<string> (update.AzurePlayerSymbol, "O");
+            Assert.AreEqual<string> (update.Winner, "inconclusive");
+            Assert.IsNull (update.WinPositions);
+        }
+
+        public void TestDetectsIfIsPlayerX () {
+            List<string> list = new List<string> {
+                "?",
+                "?",
+                "?",
+                "?",
+                "O",
+                "?",
+                "?",
+                "?",
+                "?"
+            };
+            ServiceClientCredentials serviceClientCredentials = new TokenCredentials ("FakeTokenValue");
+            TicTacToeSDKClient client = new TicTacToeSDKClient (new Uri ("https://localhost:44305"), serviceClientCredentials);
+
+            GameStateUpdate update = (GameStateUpdate) client.ExecuteMove (new Board (list));
+
+            Assert.AreEqual<string> (update.AzurePlayerSymbol, "X");
+            Assert.AreEqual<string> (update.Winner, "inconclusive");
+            Assert.IsNull (update.WinPositions);
+        }
+
+        [TestMethod]
+        public void TestDetectsXWin () {
+            List<string> list = new List<string> {
+                "X",
+                "O",
+                "?",
+                "?",
+                "X",
+                "?",
+                "?",
+                "O",
+                "X"
+            };
+            ServiceClientCredentials serviceClientCredentials = new TokenCredentials ("FakeTokenValue");
+            TicTacToeSDKClient client = new TicTacToeSDKClient (new Uri ("https://localhost:44305"), serviceClientCredentials);
+
+            GameStateUpdate update = (GameStateUpdate) client.ExecuteMove (new Board (list));
+
+            Assert.AreEqual<string> (update.Winner, "X");
+            Assert.AreEqual<List<int>> ((List<int>) update.WinPositions, new List<int> { 0, 4, 8 });
+        }
+
+        public void TestDetectsOWin () {
+            List<string> list = new List<string> {
+                "X",
+                "?",
+                "O",
+                "?",
+                "O",
+                "?",
+                "O",
+                "?",
+                "X"
+            };
+            ServiceClientCredentials serviceClientCredentials = new TokenCredentials ("FakeTokenValue");
+            TicTacToeSDKClient client = new TicTacToeSDKClient (new Uri ("https://localhost:44305"), serviceClientCredentials);
+
+            GameStateUpdate update = (GameStateUpdate) client.ExecuteMove (new Board (list));
+
+            Assert.AreEqual<string> (update.Winner, "O");
+            Assert.AreEqual<List<int>> ((List<int>) update.WinPositions, new List<int> { 2, 4, 6 });
+        }
+
+        public void TestDetectsTie () {
+            // X O X
+            // X O X
+            // O X O
+            List<string> list = new List<string> {
+                "X",
+                "O",
+                "X",
+                "X",
+                "O",
+                "X",
+                "O",
+                "X",
+                "O"
+            };
+            ServiceClientCredentials serviceClientCredentials = new TokenCredentials ("FakeTokenValue");
+            TicTacToeSDKClient client = new TicTacToeSDKClient (new Uri ("https://localhost:44305"), serviceClientCredentials);
+
+            GameStateUpdate update = (GameStateUpdate) client.ExecuteMove (new Board (list));
+
+            Assert.AreEqual<string> (update.Winner, "tie");
+            Assert.IsNull(update.WinPositions);
         }
     }
 
@@ -53,9 +164,7 @@ namespace TicTacToeFunctionalTests {
 
             Object update = client.ExecuteMove (new Board (list));
 
-            if (!(update is ErrorResponse)) {
-                throw new AssertFailedException ("Should have errored");
-            }
+            Assert.IsTrue (update is ErrorResponse);
         }
 
         [TestMethod]
@@ -76,9 +185,7 @@ namespace TicTacToeFunctionalTests {
 
             Object update = client.ExecuteMove (new Board (list));
 
-            if (!(update is ErrorResponse)) {
-                throw new AssertFailedException ("Should have errored");
-            }
+            Assert.IsTrue (update is ErrorResponse);
         }
 
         [TestMethod]
@@ -99,9 +206,7 @@ namespace TicTacToeFunctionalTests {
 
             Object update = client.ExecuteMove (new Board (list));
 
-            if (!(update is ErrorResponse)) {
-                throw new AssertFailedException ("Should have errored");
-            }
+            Assert.IsTrue (update is ErrorResponse);
         }
 
         [TestMethod]
@@ -122,9 +227,7 @@ namespace TicTacToeFunctionalTests {
 
             Object update = client.ExecuteMove (new Board (list));
 
-            if (!(update is ErrorResponse)) {
-                throw new AssertFailedException ("Should have errored");
-            }
+            Assert.IsTrue (update is ErrorResponse);
         }
 
         [TestMethod]
@@ -145,9 +248,7 @@ namespace TicTacToeFunctionalTests {
 
             Object update = client.ExecuteMove (new Board (list));
 
-            if (!(update is ErrorResponse)) {
-                throw new AssertFailedException ("Should have errored");
-            }
+            Assert.IsTrue (update is ErrorResponse);
         }
 
         [TestMethod]
@@ -157,9 +258,7 @@ namespace TicTacToeFunctionalTests {
 
             Object update = client.ExecuteMove (new Board (null));
 
-            if (!(update is ErrorResponse)) {
-                throw new AssertFailedException ("Should have errored");
-            }
+            Assert.IsTrue (update is ErrorResponse);
         }
     }
 }
