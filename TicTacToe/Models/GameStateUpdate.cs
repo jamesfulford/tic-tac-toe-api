@@ -41,9 +41,9 @@ namespace TicTacToe.Models {
         public GameStateUpdate (
             string azurePlayerSymbol,
             string winner,
-            int? move = null,
-            IEnumerable<string> gameBoard = null,
-            IEnumerable<int> winPositions = null
+            int? move,
+            IEnumerable<string> gameBoard,
+            IEnumerable<int> winPositions
         ) {
             this.move = move;
             this.azurePlayerSymbol = azurePlayerSymbol;
