@@ -1,10 +1,2 @@
 James Fulford
 jaf968@g.harvard.edu
-
-Tests Cover Invalid Cases:
-1. No non-9-element board states
-2. No excessive X's, no excessive O's (abs(count(X) - count(O) <= 1)
-3. No lower-case symbols
-4. No multi-character symbols
-5. No non-(X|O|?) single-character symbols
-6. No accepting non-strings (i.e. integers, null, various objects)
