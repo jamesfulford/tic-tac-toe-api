@@ -89,8 +89,6 @@ namespace TicTacToe {
                     swaggerDoc.Host = httpReq.Host.Value;
                 });
             });
-
-            // SWAGGER: swagger-ui-middleware to expose interactive documentation
             app.UseSwaggerUI (c => {
                 c.SwaggerEndpoint ($"/swagger/{Version}/swagger.json", Title);
             });
